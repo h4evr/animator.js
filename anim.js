@@ -5,12 +5,6 @@
 var Animator = (function () {
     "use strict";
 
-    /* Used for generating unique IDs. */
-    var animCounter = 0;
-
-    /* Used for generating unique IDs. */
-    var ANIM_NAME = "animation";
-
     /* Browser prefix. */
     var browser = "";
 
