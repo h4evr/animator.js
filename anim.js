@@ -41,7 +41,6 @@ var Animator = (function () {
 
         for (var i = 0; i < prefixes.length; ++i) {
             if (typeof(elm.style[prefixes[i] + 'AnimationName']) !== 'undefined') {
-                console.log("[ANIM] Browser Prefix: " + prefixes[i]);
                 browser = '-' + prefixes[i].toLowerCase() + '-';
                 jsBrowser = prefixes[i];
                 return;
@@ -53,6 +52,27 @@ var Animator = (function () {
     var animationsStyle = document.createElement("style");
     animationsStyle.setAttribute("id", "animations");
     document.head.appendChild(animationsStyle);
+
+    var extend = function (o1, o2) {
+        var res = {},
+            k;
+        
+        o2 = o2 || {};
+        for (k in o2) {
+            if (o2.hasOwnProperty(k)) {
+                res[k] = o2[k];
+            }
+        }
+
+        o1 = o1 || {};
+        for (k in o1) {
+            if (o1.hasOwnProperty(k)) {
+                res[k] = o1[k];
+            }
+        }
+
+        return res;
+    };
 
     /**
      * Create a new animation. Can be retrieved using the "get" function.
@@ -81,8 +101,11 @@ var Animator = (function () {
 
         animations[name] = {
             "animationName": name,
-            "animate": animate
+            "animate": animate,
+            "defs": defs,
         };
+
+        return animations[name];
     };
 
     /**
@@ -93,6 +116,15 @@ var Animator = (function () {
      * @return An object with the functions "start" and "stop".
      */
     var animate = function (obj, defs) {
+        if (!obj) {
+            throw new TypeError("obj must be a string or a DOMObject");
+        }
+
+        if (typeof(obj) === 'string') {
+            obj = document.getElementById(obj);
+        }
+
+        defs = extend(defs, this.defs);
         return {
             "animationName": this.animationName,
             "obj": obj,
@@ -108,7 +140,7 @@ var Animator = (function () {
      * "animate" function.
      */
     var start = function (defs) {
-        defs = defs || this.defs || {};
+        defs = extend(defs, this.defs);
 
         var duration = defs.duration || 1,
             times = defs.times || 'infinite',
@@ -127,7 +159,6 @@ var Animator = (function () {
         var self = this;
 
         var onFinish = function () {
-            console.log("[ANIM] " + self.animationName + " finished.");
             self.obj.removeEventListener(animationEndEventName[browser], onFinish, false);
             self.obj.style[jsBrowser + 'Animation'] = '';
             
@@ -137,8 +168,8 @@ var Animator = (function () {
         };
 
         this.obj.addEventListener(animationEndEventName[browser], onFinish, false);
-        
-        console.log("[ANIM] " + this.animationName + " started.");
+
+        return this;
     };
 
     /**
@@ -151,9 +182,9 @@ var Animator = (function () {
             var finishEvent = document.createEvent('Event');
             finishEvent.initEvent(animationEndEventName[browser], true, true);
             this.obj.dispatchEvent(finishEvent);
-            
-            console.log("[ANIM] " + this.animationName + " stopped.");
         }
+
+        return this;
     };
 
     /**

@@ -3,7 +3,7 @@
     <head>
         <title>CSS3 Anim framework</title>
     <meta charset="utf-8" />
-        <script type="text/javascript" src="anim.js"></script>
+        <script type="text/javascript" src="anim_min.js"></script>
         <style>
         #obj1 {
             width: 200px;
@@ -23,8 +23,6 @@
         </div>
 
         <script type="text/javascript">
-            var obj = document.getElementById('obj1');
-
             Animator.create('fade', {
                 "0%": "opacity:0;",
                 "100%": "opacity:1;"
@@ -43,12 +41,12 @@
                 "100%": "height: 2em; opacity: 1"
             });
 
-            var anim = Animator.get('open').animate(obj, { 
+            var anim = Animator.get('open').animate('obj1', { 
                 duration: 1, 
                 times: 1,
                 finish: function () {
                     console.log("[ANIM] on finish called!");
-                    Animator.get('shake').animate(obj, {
+                    Animator.get('shake').animate('obj1', {
                         duration: 0.3,
                         times: 1
                     }).start();
